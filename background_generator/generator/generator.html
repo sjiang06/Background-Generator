@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Background Generator</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script type='text/javascript' src='http://code.jquery.com/jquery-latest.min.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="./node_modules/angular/angular.js" type="text/javascript" ></script>
+    <script src="./node_modules/angular-animate/angular-animate.js" type="text/javascript" ></script>
+    <script src="./node_modules/angular-aria/angular-aria.js" type="text/javascript"></script>
+    <script src="./node_modules/angular-material/angular-material.js" type="text/javascript" ></script>
+
+    <script src="node_modules/angular-route/angular-route.js"></script>
+    <script src="node_modules/angular-resource/angular-resource.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="page.css">
+	<!-- <link rel="stylesheet" type="text/css" href="public/css/style.css"> -->
+</head>
+<body>
+	<div id="canvas">
+		<!--Define the canvas where the shapes will be placed-->
+		<svg id="background-image" width="540" height="730" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			<defs>
+				<!--Blue to pink gradient-->
+			    <linearGradient id="grad0" x1="0%" y1="0%" x2="100%" y2="0%">
+			      <stop offset="0%" style="stop-color:#ffeb54;stop-opacity:1" />
+			      <stop offset="100%" style="stop-color:#ef3291;stop-opacity:1" />
+			    </linearGradient>
+			    <!--Yellow to fuschia gradient-->
+			    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+			      <stop offset="0%" style="stop-color:#bad4ff;stop-opacity:1" />
+			      <stop offset="80%" style="stop-color:#f8baff;stop-opacity:1" />
+			    </linearGradient>
+			    <!--Blur filter-->
+			    <filter id="f1" x="0" y="0">
+      				<feGaussianBlur in="SourceGraphic" stdDeviation="5" edgeMode="wrap"/>
+    			</filter>
+    			<!--Circle grid pattern-->
+    			<pattern id="Pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" >
+			      <circle cx="10" cy="10" r="5" fill="red" fill-opacity="0.5"/>
+			    </pattern>
+			    <!--Golden angle blossom pattern-->
+			    <pattern id="pattern-2" x="0" y="0" width="512" height="512" patternUnits="userSpaceOnUse">
+			    	<svg width="512" height="512" id="blossom-pattern"></svg>
+			  		<script>
+			  			$(function(){
+					    	$("#blossom-pattern").load("pattern.html"); 
+					    });
+	  				</script>
+			    </pattern>
+	  		</defs>
+	  		<rect id="background" width="540" height="730" fill="white"/>
+	  		<!-- <g id="human"></g>
+	  		<script type="text/javascript">
+	  			$(function() {
+	  				$("#human").load("images/people.svg");
+	  			});
+	  		</script> -->
+	  		<!--Code for wave-->
+  			<!-- <path d="M100,100
+	        	Q200,200 100,300
+	        	T100 600"
+	    		fill="none" stroke="#000" stroke-width="2px" stroke-dasharray="4"/>
+	    	<path d="M100,100
+	        	Q300,200 100,300
+	        	T100 600"
+	    		fill="none" stroke="#000" stroke-width="2px" />
+	    	<path d="M100,100
+	        	Q2,200 100,300
+	        	T100 600"
+	    		fill="none" stroke="#000" stroke-width="2px" />
+	    	<path d="M100,100
+	        	Q2,200 100,300
+	        	T100 600"
+	    		fill="none" stroke="#000" stroke-width="2px" />
+	    	<path d="M100,100
+	        	Q150,200 100,400
+	        	T100 600"
+	    		fill="none" stroke="#000" stroke-width="2px" />
+	    	<path d="M100,100
+	        	Q50,200 100,400
+	        	T100 600"
+	    		fill="none" stroke="#000" stroke-width="2px" /> -->
+
+	    	<!-- Code for spiral -->
+	    	<!-- <path id="spiral" d="" fill="none" stroke="black" stroke-width="3"/>
+	    	<script>
+	    		function lineIntersection (m1, b1, m2, b2) {
+				    if (m1 === m2) {
+				        throw new Error("parallel slopes");
+				    }
+				    const x = (b2 - b1) / (m1 - m2);
+				    return {x: x, y: m1 * x + b1};
+				}
+
+				function pStr (point) {
+				  return `${point.x},${point.y} `;
+				}
+
+				function getPath (center, startRadius, spacePerLoop, startTheta, endTheta, thetaStep) {
+				    // Rename spiral parameters for the formula r = a + bθ
+				    const a = startRadius;  // start distance from center
+				    const b = spacePerLoop / Math.PI / 2; // space between each loop
+
+				    // convert angles to radians
+				    let oldTheta = newTheta = startTheta * Math.PI / 180;
+				    endTheta = endTheta * Math.PI / 180;
+				    thetaStep = thetaStep * Math.PI / 180;
+
+				    // radii
+				    let oldR,
+				        newR = a + b * newTheta;
+
+				    // start and end points
+				    const oldPoint = {x: 0, y: 0};
+				    const newPoint = {
+				        x: center.x + newR * Math.cos(newTheta), 
+				        y: center.y + newR * Math.sin(newTheta)
+				    };
+
+				    // slopes of tangents
+				    let oldslope,
+				        newSlope = (b * Math.sin(oldTheta) + (a + b * newTheta) * Math.cos(oldTheta)) /
+				                   (b * Math.cos(oldTheta) - (a + b * newTheta) * Math.sin(oldTheta));
+
+				    let path = "M " + pStr(newPoint);
+				    
+				    while (oldTheta < endTheta - thetaStep) {
+				        oldTheta = newTheta;
+				        newTheta += thetaStep;
+
+				        oldR = newR;
+				        newR = a + b * newTheta;
+
+				        oldPoint.x = newPoint.x;
+				        oldPoint.y = newPoint.y;
+				        newPoint.x = center.x + newR * Math.cos(newTheta);
+				        newPoint.y = center.y + newR * Math.sin(newTheta);
+
+				        // Slope calculation with the formula:
+				        // (b * sinΘ + (a + bΘ) * cosΘ) / (b * cosΘ - (a + bΘ) * sinΘ)
+				        const aPlusBTheta = a + b * newTheta;
+
+				        oldSlope = newSlope;
+				        newSlope = (b * Math.sin(newTheta) + aPlusBTheta * Math.cos(newTheta)) /
+				                   (b * Math.cos(newTheta) - aPlusBTheta * Math.sin(newTheta));
+
+				        const oldIntercept = -(oldSlope * oldR * Math.cos(oldTheta) - oldR * Math.sin(oldTheta));
+				        const newIntercept = -(newSlope * newR* Math.cos(newTheta) - newR * Math.sin(newTheta));
+
+				        const controlPoint = lineIntersection(oldSlope, oldIntercept, newSlope, newIntercept);
+
+				        // Offset the control point by the center offset.
+				        controlPoint.x += center.x;
+				        controlPoint.y += center.y;
+
+				        path += "Q " + pStr(controlPoint) + pStr(newPoint);
+				    }
+				    
+				    return path;
+				}
+
+				const path = getPath({x:200,y:200}, 0, 50, 0, 3*360, 30);
+
+				const spiral = document.querySelector('#spiral');
+				spiral.setAttribute("d", path);
+	    	</script> -->
+		</svg>
+
+	</div>
+	<!--Defines the panel of buttons that will add shapes to the canvas-->
+	<div id="button-panel">
+		<div class="form-row">
+			<button onclick="setBackground()">Background</button>
+		</div>
+		<div class="form-row">
+			<button onclick="addRect()">Rectangle</button>
+		</div>
+		<div class="form-row">
+			<button onclick="addCircle()">Circle</button>
+		</div>
+		<div class="form-row">
+			<button onclick="addCapsule()">Capsule</button>
+		</div>
+		<div class="form-row">
+			<button onclick="addText()">Text</button>
+		</div>
+		<div class="form-row">
+			<button onclick="addTriangle()">Triangle</button>
+		</div>
+		<div class="form-col">
+			<div class="form-row">
+				<label>Radius aX</label>
+				<input type="number" class="number-input" id="radius-ax-input">
+				<label>Radius aY</label>
+				<input type="number" class="number-input" id="radius-ay-input">
+			</div>
+			<div class="form-row">
+				<label>Radius bX</label>
+				<input type="number" class="number-input" id="radius-bx-input">
+				<label>Radius bY</label>
+				<input type="number" class="number-input" id="radius-by-input">
+			</div>
+			<div class="form-row">
+				<label>Rotation</label>
+				<input type="number" class="number-input" id="rotation-input">
+				<button id="cylinder-button">Cylinder</button>
+			</div>
+		</div>
+		<div class="form-row">
+			<button onclick="addHuman()">Human</button>
+		</div>
+		<div class="form-row">
+			<button onclick="makeBackground()">Full Background</button>
+		</div>
+	</div>
+
+	<script>
+		var numGradients = 2
+		var svgNS = "http://www.w3.org/2000/svg"; 
+		var fill = ["url(#grad0)", "url(#grad1)", "#d0d3d8", "#2c2c2d", "#6767e5", "#9bfff0", "url(#Pattern)", "url(#pattern-2"];
+		var effect = ["url(#f1"];
+		var fontClass = ['small', 'medium', 'large', 'main'];
+		var maxX = 540;
+		var maxY = 730;
+		var maxRotation = 360;
+		var colors = ["#FFB19C", "#00203F", "#F1F1F1", "#FF2020"];
+		var maxScale = 4;
+
+		//Sets a random background fill
+		function setBackground() {
+			var index = Math.floor(Math.random() * fill.length);
+			document.getElementById("background").style.fill = fill[index];
+		}
+
+		//Adds a rectangle to the canvas
+		function addRect() {
+			var rect = document.createElementNS(svgNS, "rect");
+			var fillIndex = Math.floor(Math.random() * fill.length);
+			var blurIndex = Math.floor(Math.random() * (effect.length + 1));
+			var width = Math.floor(Math.random() * maxX);
+			var height = Math.floor(Math.random() * maxX);
+			var x = Math.floor(Math.random() * (maxX - width)); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var y = Math.floor(Math.random() * (maxY - height)); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var rotation = Math.floor(Math.random() * maxRotation);
+
+			rect.setAttributeNS(null,"id","rect");
+		    rect.setAttributeNS(null,"x", x);
+		    rect.setAttributeNS(null,"y", y);
+		    rect.setAttributeNS(null,"width",width);
+		    rect.setAttributeNS(null,"height", height);
+		    rect.setAttributeNS(null,"stroke","none");
+		    rect.setAttributeNS(null,"transform","rotate(" + parseInt(rotation) + " " + parseInt(x + width/2) + " " + parseInt(y + height/2) + ")");
+		    rect.style.fill = fill[fillIndex];
+			document.getElementById("background-image").appendChild(rect);
+		}
+
+		//Adds a circle to the canvas
+		function addCircle() {
+			var circle = document.createElementNS(svgNS, "circle");
+			var fillIndex = Math.floor(Math.random() * fill.length);
+			var blurIndex = Math.floor(Math.random() * (effect.length + 1));
+			var x = Math.floor(Math.random() * maxX); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var y = Math.floor(Math.random() * maxY); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var r = Math.floor(Math.random() * maxX);
+
+			circle.setAttributeNS(null,"id","circle");
+		    circle.setAttributeNS(null,"cx", x);
+		    circle.setAttributeNS(null,"cy", y);
+		    circle.setAttributeNS(null,"r", r);
+		    circle.setAttributeNS(null,"stroke","none");
+		    circle.style.fill = "url(#pattern-2)";
+		    // if(blurIndex < effect.length) {
+		    // 	circle.style.filter = effect[blurIndex];
+		    // }
+			document.getElementById("background-image").appendChild(circle);
+
+		}
+
+		//Adds a capsule (ellipse) to the canvas
+		function addCapsule() {
+			var capsule = document.createElementNS(svgNS, "ellipse");
+			var fillIndex = Math.floor(Math.random() * fill.length);
+			var blurIndex = Math.floor(Math.random() * (effect.length + 1));
+			var x = Math.floor(Math.random() * maxX); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var y = Math.floor(Math.random() * maxY); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var rx = Math.floor(Math.random() * maxX);
+			var ry = Math.floor(Math.random() * maxX);
+			var rotation = Math.floor(Math.random() * maxRotation);
+
+
+			capsule.setAttributeNS(null,"id","capsule");
+		    capsule.setAttributeNS(null,"cx", x);
+		    capsule.setAttributeNS(null,"cy", y);
+		    capsule.setAttributeNS(null,"rx", rx);
+		    capsule.setAttributeNS(null,"ry", ry);
+		    capsule.setAttributeNS(null,"stroke","none");
+		    capsule.style.fill = fill[fillIndex];
+		    // if(blurIndex < effect.length) {
+		    // 	capsule.style.filter = effect[blurIndex];
+		    // }
+		    capsule.setAttributeNS(null,"transform","rotate(" + parseInt(rotation) + " " + parseInt(x) + " " + parseInt(y) + ")");
+			document.getElementById("background-image").appendChild(capsule);
+ 
+		}
+
+		//Adds text to canvas
+		function addText() {
+			var text = document.createElementNS(svgNS, "text");
+			text.innerHTML = "Text";
+			var fontIndex = Math.floor(Math.random() * fontClass.length);
+			var width = Math.floor(Math.random() * maxX);
+			var height = Math.floor(Math.random() * maxY);
+			var x = Math.floor(Math.random() * (maxX - width)); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var y = Math.floor(Math.random() * (maxY - height)); //* Math.pow(-1, Math.floor(
+			var rotation = Math.floor(Math.random() * maxRotation);
+
+			text.setAttributeNS(null, 'class', fontClass[fontIndex]);
+			text.setAttributeNS(null,"x", x);
+		    text.setAttributeNS(null,"y", y);
+		    text.style.fill = "red";
+		    //text.setAttributeNS(null,"transform","rotate(" + parseInt(rotation) + " " + parseInt(x+width/2) + " " + parseInt(y+height/2) + ")");
+			document.getElementById("background-image").appendChild(text);
+
+		}
+
+		//Adds triangle to canvas
+		function addTriangle() {
+			var tri = document.createElementNS(svgNS, "polygon");
+			var fillIndex = Math.floor(Math.random() * fill.length);
+			tri.setAttributeNS(null, 'points', Math.floor(Math.random() * maxX) + "," + Math.floor(Math.random() * maxY) + " " +  Math.floor(Math.random() * maxX) + "," + Math.floor(Math.random() * maxY) + " " +  Math.floor(Math.random() * maxX) + "," + Math.floor(Math.random() * maxY));
+			tri.style.fill = fill[fillIndex];
+			tri.setAttributeNS(null, "stroke", "none");
+
+			document.getElementById("background-image").appendChild(tri);
+		}
+
+		//Sets a randomized background on the canvas
+		function makeBackground() {
+			setBackground();
+			addRect();
+			addTriangle();
+			addCircle();
+			addCapsule();
+			addCylinder(Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxX), 
+				Math.floor(Math.random() *maxX), Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxX),
+				Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxX), Math.floor(Math.random() * 360));
+			addText();
+			addHuman();
+
+		}
+
+		//Adds cylindrical line arrangement to canvas
+		function addCylinder(radiusiX, radiusiY, radiuseX, radiuseY, startX, startY, endX, endY, theta) {
+			for(var i = 0; i < 360; i+=5) {
+				var line = document.createElementNS(svgNS, "path");
+				var initX = startX + (radiusiX * Math.cos(i) * Math.cos(theta)) - (radiusiY * Math.sin(i) * Math.sin(theta));
+				var initY = startY + (radiusiY * Math.sin(i) * Math.cos(theta)) + (radiusiX * Math.cos(i) * Math.sin(theta));
+				var closeX = endX + (radiuseX * Math.cos(i) * Math.cos(theta)) - (radiuseY * Math.sin(i) * Math.sin(theta));
+				var closeY = endY + (radiuseY * Math.sin(i) * Math.cos(theta)) + (radiuseX * Math.cos(i) * Math.sin(theta));
+				line.setAttributeNS(null, 'd', "M" + initX + " " + initY + " L" + closeX + " " + closeY);
+				line.setAttributeNS(null, 'fill', 'none');
+				line.setAttributeNS(null, 'stroke', 'black');
+				document.getElementById("background-image").appendChild(line);
+
+			}
+		}
+
+		function addHuman() {
+			var group = document.createElementNS(svgNS, "g");
+			var x = Math.floor(Math.random() * (maxX)); 
+			var y = Math.floor(Math.random() * (maxY));
+			var scale =  Math.floor(Math.random() * maxScale) + 1;
+			var rotation = Math.floor(Math.random() * maxRotation);
+			group.setAttributeNS(null, "width", "70px");
+			group.setAttributeNS(null, "height", "300px");
+			group.setAttributeNS(null, "transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotation + ")");
+			group.setAttributeNS(null, "id", "human");
+			document.getElementById("background-image").appendChild(group);
+  			$("#human").load("images/people.svg", function() {
+  				var paths = document.getElementsByClassName("human-part");
+	  			for(var i = 0; i < paths.length; i++) {
+	  				var index = Math.floor(Math.random() * colors.length);
+	  				paths[i].setAttributeNS(null, "fill", colors[index]);
+	  			}
+  			});
+
+  			// $("document").ready(function() {
+  			// 	var paths = document.getElementsByClassName("human-part");
+	  		// 	console.log(paths);
+	  		// 	for(var i = 0; i < 6; i++) {
+	  		// 		var index = Math.floor(Math.random() * colors.length);
+	  		// 		paths[i].setAttributeNS(null, "fill", "red");
+	  		// 	}
+  			// })
+		}
+
+		document.getElementById("cylinder-button").onclick = function() {
+			var ix = Math.floor(Math.random() * maxX); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var iy = Math.floor(Math.random() * maxY); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var ex = Math.floor(Math.random() * maxX); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var ey = Math.floor(Math.random() * maxY); //* Math.pow(-1, Math.floor(Math.random() * 2));
+			var radiusiX = parseInt(document.getElementById("radius-ax-input").value);
+			var radiusiY = parseInt(document.getElementById("radius-ay-input").value);
+			var radiuseX = parseInt(document.getElementById("radius-bx-input").value);
+			var radiuseY = parseInt(document.getElementById("radius-by-input").value);
+			var rotation = parseInt(document.getElementById("rotation-input").value);
+			addCylinder(radiusiX, radiusiY, radiuseX, radiuseY, ix, iy, ex, ey, rotation);
+		};
+
+	</script>
+</body>
+</html>
