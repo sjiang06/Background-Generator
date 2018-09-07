@@ -224,7 +224,7 @@
 		var maxX = 540;
 		var maxY = 730;
 		var maxRotation = 360;
-		var colors = ["#FFB19C", "#00203F", "#F1F1F1", "#FF2020"];
+		var colors = ["#FFB19C", "#00203F", "#F1F1F1", "#FF2020"]; //colors used in human
 		var maxScale = 4;
 
 		//Sets a random background fill
@@ -366,6 +366,7 @@
 			}
 		}
 
+		//Add human figure to canvas
 		function addHuman() {
 			var group = document.createElementNS(svgNS, "g");
 			var x = Math.floor(Math.random() * (maxX)); 
@@ -384,15 +385,6 @@
 	  				paths[i].setAttributeNS(null, "fill", colors[index]);
 	  			}
   			});
-
-  			// $("document").ready(function() {
-  			// 	var paths = document.getElementsByClassName("human-part");
-	  		// 	console.log(paths);
-	  		// 	for(var i = 0; i < 6; i++) {
-	  		// 		var index = Math.floor(Math.random() * colors.length);
-	  		// 		paths[i].setAttributeNS(null, "fill", "red");
-	  		// 	}
-  			// })
 		}
 
 		document.getElementById("cylinder-button").onclick = function() {
